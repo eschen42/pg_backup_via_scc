@@ -12,6 +12,7 @@ RUN apt-get update && \
     net-tools \
     openssh-server \
     supervisor \
+    vim-tiny \
     && sed -i 's/\(.*pam_loginuid.so\)/#\1/' /etc/pam.d/sshd
 
 RUN rm /entrypoint.sh
