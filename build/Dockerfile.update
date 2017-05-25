@@ -6,5 +6,9 @@ MAINTAINER Arthur C. Eschenlauer, esch0041@umn.edu, eschen@alumni.princeton.edu
 ### update startup files
 
 COPY supervisord.conf /etc/
+COPY supervisor_pg.conf /etc/supervisor/conf.d
+COPY supervisor_sshd.conf /etc/supervisor/conf.d
+COPY supervisor_cron.conf /etc/supervisor/conf.d
 COPY barman-entrypoint.sh /
+
 
