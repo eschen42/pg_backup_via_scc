@@ -1,15 +1,23 @@
-barman:
-  user: postgres
-  image: eschen42/standby-barman:latest
-  volumes:
-    - ./var_lib_postgresql/standby:/var/lib/postgresql/data
-    - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
-    - ./var_log/barman:/var/log
-pg:
-  user: postgres
-  image: eschen42/standby-barman:latest
-  volumes:
-    - ./var_lib_postgresql/standby:/var/lib/postgresql/standby
-    - ./var_lib_postgresql/pg:/var/lib/postgresql/data
-    - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
-    - ./var_log/pg:/var/log
+version: '2'
+services:
+  pg:
+    user: postgres
+    image: eschen42/standby-barman:latest
+    volumes:
+      - ./var_lib_postgresql/standby:/var/lib/postgresql/standby
+      - ./var_lib_postgresql/pg:/var/lib/postgresql/data
+      - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
+      - ./var_log/pg:/var/log
+    networks:
+      - can
+  barman:
+    user: postgres
+    image: eschen42/standby-barman:latest
+    volumes:
+      - ./var_lib_postgresql/standby:/var/lib/postgresql/data
+      - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
+      - ./var_log/barman:/var/log
+    networks:
+      - can
+networks:
+  can:
