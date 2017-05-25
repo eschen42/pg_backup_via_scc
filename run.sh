@@ -8,3 +8,7 @@ echo running docker-compose up in blocking mode
   echo docker-compose up succeeded
 )
 
+echo cleaning up volumes that will never be used again
+docker volume rm $( docker volume ls -q -f 'dangling=true' )
+
+echo clean-up completed

@@ -10,7 +10,6 @@ chown $PG_UID:$PG_GID var_lib_postgresql/archive
 echo running docker-compose up in daemon mode
 (
   docker-compose -f docker-compose.yml up -d
-  # docker exec -ti -u root hotstandby_barman_1 bash -c 'chown postgres:postgres /var/lib/postgresql/data'
 ) && (
   echo docker-compose up succeeded
 )

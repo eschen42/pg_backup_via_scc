@@ -11,7 +11,6 @@ echo running docker-compose down
 
 
 echo cleaning up volumes that will never be used again
-# docker volume rm `docker volume ls  -f 'dangling=true' | grep -v DRIVER | sed -e "s/local[ ]*//"`
 docker volume rm $( docker volume ls -q -f 'dangling=true' )
 
 echo clean-up completed
