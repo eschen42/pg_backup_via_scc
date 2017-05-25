@@ -1,0 +1,13 @@
+barman:
+  user: postgres
+  image: eschen42/standby-barman:latest
+  volumes:
+    - ./var_lib_postgresql/standby:/var/lib/postgresql/data
+    - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
+pg:
+  user: postgres
+  image: eschen42/standby-barman:latest
+  volumes:
+    - ./var_lib_postgresql/standby:/var/lib/postgresql/standby
+    - ./var_lib_postgresql/pg:/var/lib/postgresql/data
+    - ./var_lib_postgresql/archive:/var/lib/postgresql/archive

@@ -1,0 +1,19 @@
+<project name="standby-barman" default="all">
+
+	<!-- ALL -->
+	<target name="all"/>
+
+	<!-- BUILD DOCKER -->
+	<target name="build.docker">
+		<exec executable="docker">
+			<arg value="build"/>
+			<arg value="-t"/>
+      <arg value="eschen42/standby-barman"/>
+			<arg value="."/>
+		</exec>
+	</target>
+
+	<!-- RUN DOCKER -->
+	<target name="run.docker" depends="build.docker"/>
+
+</project>

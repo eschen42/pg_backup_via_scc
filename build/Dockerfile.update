@@ -1,0 +1,10 @@
+# vim:set ft=dockerfile:
+FROM eschen42/standby-barman:base
+
+MAINTAINER Arthur C. Eschenlauer, esch0041@umn.edu, eschen@alumni.princeton.edu
+
+### update startup files
+
+COPY supervisord.conf /etc/
+COPY barman-entrypoint.sh /
+
