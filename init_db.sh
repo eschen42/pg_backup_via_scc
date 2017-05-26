@@ -5,6 +5,7 @@
 set -eu
 
 # initialize the primary db if it does not exist
+#   ref: https://wiki.postgresql.org/wiki/Hot_Standby#Create_the_master_database
 if [ ! -f var_lib_postgresql/pg/postgresql.conf ]; then
   docker exec -ti -u postgres hotstandby_pg_1 bash -c '
     echo START initializing primary database
@@ -20,6 +21,7 @@ if [ ! -f var_lib_postgresql/pg/postgresql.conf ]; then
 fi
 
 # set up configuration files to initialize the hot standby
+#   ref: https://wiki.postgresql.org/wiki/Hot_Standby#Configure_the_master_for_WAL_archiving
 if [ -f var_lib_postgresql/pg/postgresql.conf -a ! -f var_lib_postgresql/standby/postgresql.conf ]; then
   docker exec -ti -u postgres hotstandby_pg_1 bash -c '
     DOMAIN=$( python -c "import socket;print socket.getfqdn('\''barman'\'')" | sed -e "s/.*\([.][^.]*\)$/\1/" )
@@ -59,6 +61,7 @@ if [ -f var_lib_postgresql/pg/postgresql.conf -a ! -f var_lib_postgresql/standby
 fi
 
 # initialize the hot standby only if it does not exist
+#   ref: https://wiki.postgresql.org/wiki/Hot_Standby#Use_pg_basebackup_to_copy_the_master_.289.1.2B.29
 if [ ! -f var_lib_postgresql/standby/postgresql.conf ]; then
   docker exec -ti -u postgres hotstandby_pg_1 bash -c "
     echo START seeding standby
