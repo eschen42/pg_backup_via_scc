@@ -1,5 +1,5 @@
 #!/bin/bash
-# Art Eschenlauer, May 2017 esch0041@umn.edu eschen@alumni.princeton.edu  
+# Art Eschenlauer, May 2017 esch0041@umn.edu eschen@alumni.princeton.edu
 
 # Much of this was inspired by https://wiki.postgresql.org/wiki/Hot_Standby
 #   which in turn references https://www.postgresql.org/docs/current/static/hot-standby.html
@@ -36,8 +36,10 @@ if [ ! -f var_lib_postgresql/pg/postgresql.conf ]; then
     echo `pwd` @ $HOSTNAME
     ls -la | grep -E "(conf$)|(pid$)"
 
-    if [ ! -f postmaster.pid ]; then 
-      echo starting the PostgreSQL database
+    if [ ! -f postmaster.pid ]; then
+      # ensure permissions to start the DB
+      chmod 700 /var/lib/postgresql/data
+      echo starting the PostgreSQL database after "initialize the primary db if it does not exist"
       supervisorctl start postgres
       supervisorctl status postgres
     fi
@@ -59,8 +61,8 @@ if [ -f var_lib_postgresql/pg/postgresql.conf -a ! -f var_lib_postgresql/standby
     DOMAIN=$( python -c "import socket;print socket.getfqdn('\''barman'\'')" | sed -e "s/.*\([.][^.]*\)$/\1/" )
 
     cd /var/lib/postgresql/data;
-    echo stop the database to rewrite the configuration files
-    if [ -f postmaster.pid ]; then 
+    echo stop the main database to rewrite the configuration files
+    if [ -f postmaster.pid ]; then
       supervisorctl stop postgres
       supervisorctl status postgres
     fi
@@ -89,8 +91,10 @@ if [ -f var_lib_postgresql/pg/postgresql.conf -a ! -f var_lib_postgresql/standby
     ls -la | grep -E "(conf$)|(pid$)"
 
     echo start the database to read the rewritten configuration files
-    if [ ! -f postmaster.pid ]; then 
-      echo starting the PostgreSQL database
+    if [ ! -f postmaster.pid ]; then
+      # ensure permissions to start the DB
+      chmod 700 /var/lib/postgresql/data
+      echo starting the PostgreSQL database after "set up configuration files to initialize the hot standby"
       supervisorctl start postgres
       supervisorctl status postgres
     fi
@@ -115,8 +119,10 @@ if [ ! -f var_lib_postgresql/standby/postgresql.conf ]; then
     echo `pwd` @ $HOSTNAME
     ls -la | grep -E "(conf$)|(pid$)"
 
-    if [ ! -f postmaster.pid ]; then 
-      echo starting the PostgreSQL database
+    if [ ! -f postmaster.pid ]; then
+      # ensure permissions to start the DB
+      chmod 700 /var/lib/postgresql/data
+      echo starting the PostgreSQL database after "initialize the hot standby only if it does not exist"
       supervisorctl start postgres
       supervisorctl status postgres
     fi
@@ -144,52 +150,65 @@ if [ -f var_lib_postgresql/standby/postgresql.conf ]; then
     echo ---
     echo START configuring standby on "barman" = $HOSTNAME = $MYIFADDR
 
-    set -e
-    DOMAIN=$( python -c "import socket;print socket.getfqdn('\''barman'\'')" | sed -e "s/.*\([.][^.]*\)$/\1/" )
+    if [ -z "$(netstat -a | grep 5433.*LISTEN)" ]; then
+      echo postgres is not listening on port 5433
+      set -e
+      DOMAIN=$( python -c "import socket;print socket.getfqdn('\''barman'\'')" | sed -e "s/.*\([.][^.]*\)$/\1/" )
 
-    cd /var/lib/postgresql/data;
-    echo stop the database to rewrite the configuration files
-    if [ -f postmaster.pid ]; then 
-      supervisorctl stop postgres
-      supervisorctl status postgres
-    fi
+      cd /var/lib/postgresql/data
 
-    echo delete and replace lines of postgresql.conf necessary to RUN the hot standby
+      echo `pwd` @ $HOSTNAME
+      ls -la | grep -E "(conf$)|(pid$)"
 
-    sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" postgresql.conf
-    #
-    echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"             >> postgresql.conf
-    echo "hot_standby = on"                                                                >> postgresql.conf
-    echo "port = 5433"                                                                     >> postgresql.conf
-    echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"             >> postgresql.conf
 
-    echo delete and replace lines of recovery.conf necessary to RUN the hot standby
-    sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" recovery.conf
-    #
-    echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"             >> recovery.conf
-    echo "standby_mode = '\''on'\''"                                                       >> recovery.conf
-    echo "restore_command = '\''cp -i /path/to/archive/%f %p'\''"                          >> recovery.conf
-    echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"             >> recovery.conf
+      echo stop the hot standby database to rewrite the configuration files
+      if [ -f postmaster.pid ]; then
+        supervisorctl stop postgres
+        supervisorctl status postgres
+      fi
 
-    echo `pwd` @ $HOSTNAME
-    echo delete and replace lines of pg_hba.conf necessary to accept connections from "pg"
-    sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" pg_hba.conf
-    #
-    echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"   >> pg_hba.conf
-    echo "host  all  postgres  pg.$DOMAIN  trust"                                >> pg_hba.conf
-    echo "host  all  postgres  barman.$DOMAIN  trust"                            >> pg_hba.conf
-    echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"   >> pg_hba.conf
+      echo delete and replace lines of postgresql.conf necessary to RUN the hot standby
 
-    echo `pwd` @ $HOSTNAME
-    ls -la | grep -E "(conf$)|(pid$)"
+      sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" postgresql.conf
+      #
+      echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"             >> postgresql.conf
+      echo "hot_standby = on"                                                                >> postgresql.conf
+      echo "port = 5433"                                                                     >> postgresql.conf
+      echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"             >> postgresql.conf
 
-    if [ ! -f postmaster.pid ]; then 
-      echo starting the PostgreSQL database
-      supervisorctl start postgres
-      supervisorctl status postgres
+      echo delete and replace lines of recovery.conf necessary to RUN the hot standby
+      sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" recovery.conf
+      #
+      echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"             >> recovery.conf
+      echo "standby_mode = '\''on'\''"                                                       >> recovery.conf
+      echo "restore_command = '\''cp -i /path/to/archive/%f %p'\''"                          >> recovery.conf
+      echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"             >> recovery.conf
+
+      echo `pwd` @ $HOSTNAME
+      echo delete and replace lines of pg_hba.conf necessary to accept connections from "pg"
+      sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" pg_hba.conf
+      #
+      echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"   >> pg_hba.conf
+      echo "host  all  postgres  pg.$DOMAIN  trust"                                >> pg_hba.conf
+      echo "host  all  postgres  barman.$DOMAIN  trust"                            >> pg_hba.conf
+      echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"   >> pg_hba.conf
+
+      echo `pwd` @ $HOSTNAME
+      ls -la | grep -E "(conf$)|(pid$)"
+
+      if [ ! -f postmaster.pid ]; then
+        # ensure permissions to start the DB
+        chmod 700 /var/lib/postgresql/data
+        echo starting the PostgreSQL database after "configure the hot standby instance to run as a hot standby"
+        supervisorctl start postgres
+        supervisorctl status postgres
+      fi
+
+    else
+      echo taking no action because postgres listening on 5433 - shut down the server to reconfigure it with this script
     fi
 
     echo END configuring standby on "barman" = $HOSTNAME = $MYIFADDR
     echo ...
   '
-fi  
+fi
