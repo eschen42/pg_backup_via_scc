@@ -33,20 +33,20 @@ if [ -f var_lib_postgresql/pg/postgresql.conf -a ! -f var_lib_postgresql/standby
 
     echo delete and replace lines of pg_hba.conf necessary to seed the hot standby
     sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" pg_hba.conf
-    echo "## b506ea2f41e284465f06c2a7e7dcd561 ##"                            >> pg_hba.conf
-    echo "host  all  postgres  $DOMAIN  trust"                               >> pg_hba.conf
-    echo "local  replication  postgres  trust"                               >> pg_hba.conf
-    echo "# replication cannot be specified in the last line of the file!"   >> pg_hba.conf
-    echo "## 7e9eb140fa111f4af6aae120c59845fc ##"                            >> pg_hba.conf
+    echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"   >> pg_hba.conf
+    echo "host  all  postgres  $DOMAIN  trust"                                   >> pg_hba.conf
+    echo "local  replication  postgres  trust"                                   >> pg_hba.conf
+    echo "# replication cannot be specified in the last line of the file!"       >> pg_hba.conf
+    echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"   >> pg_hba.conf
 
     echo delete and replace lines of postgresql.conf necessary to seed the hot standby
     sed -i -n -e "/b506ea2f41e284465f06c2a7e7dcd561/,/7e9eb140fa111f4af6aae120c59845fc/ d; p" postgresql.conf
-    echo "## b506ea2f41e284465f06c2a7e7dcd561 ##"                            >> postgresql.conf
-    echo "wal_level = hot_standby"                                           >> postgresql.conf
-    echo "archive_mode = on"                                                 >> postgresql.conf
-    echo "max_wal_senders = 3"                                               >> postgresql.conf
-    echo "archive_command = '\''cp -i %p /var/lib/postgresql/archive/%f'\''" >> postgresql.conf
-    echo "## 7e9eb140fa111f4af6aae120c59845fc ##"                            >> postgresql.conf
+    echo "## b506ea2f41e284465f06c2a7e7dcd561 please leave this line alone ##"   >> postgresql.conf
+    echo "wal_level = hot_standby"                                               >> postgresql.conf
+    echo "archive_mode = on"                                                     >> postgresql.conf
+    echo "max_wal_senders = 3"                                                   >> postgresql.conf
+    echo "archive_command = '\''cp -i %p /var/lib/postgresql/archive/%f'\''"     >> postgresql.conf
+    echo "## 7e9eb140fa111f4af6aae120c59845fc please leave this line alone ##"   >> postgresql.conf
 
     pwd;
     ls -la;
