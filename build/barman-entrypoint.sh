@@ -21,9 +21,13 @@ if [[ $# -eq 0 ]]; then
 	mkdir -p /var/log/supervisor/sshd
 	mkdir -p /var/log/supervisor/cron
 	mkdir -p /var/log/supervisor/postgres
-	if [ ! -d /var/lib/postgresql      ]; then mkdir /var/lib/postgresql      ; chown postgres:postgres /var/lib/postgresql      ; fi
-	if [ ! -d /var/lib/postgresql/data ]; then mkdir /var/lib/postgresql/data                                                    ; fi
-	if [   -d /var/lib/postgresql/data ]; then                                  chown postgres:postgres /var/lib/postgresql/data ; fi
+	if [ ! -d /var/lib/postgresql      ]; then mkdir /var/lib/postgresql;                chown postgres:postgres /var/lib/postgresql ; fi
+	if [ ! -d /var/lib/postgresql/data ]; then mkdir /var/lib/postgresql/data                                                        ; fi
+	if [   -d /var/lib/postgresql/data ]; then                                      chown postgres:postgres /var/lib/postgresql/data ; fi
+	if [ ! -d /var/lib/postgresql/backup ]; then mkdir /var/lib/postgresql/backup                                                    ; fi
+	if [   -d /var/lib/postgresql/backup ]; then                                  chown postgres:postgres /var/lib/postgresql/backup ; fi
+	if [ ! -d /usr/local/support ]; then mkdir /usr/local/support                                                                    ; fi
+	if [   -d /usr/local/support ]; then                                                  chown postgres:postgres /usr/local/support ; fi
 	exec supervisord -c /etc/supervisord.conf
 else
 	exec "$@"

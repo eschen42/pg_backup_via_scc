@@ -6,8 +6,10 @@ services:
     volumes:
       - ./var_lib_postgresql/standby:/var/lib/postgresql/standby
       - ./var_lib_postgresql/pg:/var/lib/postgresql/data
+      - ./var_lib_postgresql/backup:/var/lib/postgresql/backup
       - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
       - ./var_log/pg:/var/log
+      - ./build/support:/usr/local/support
     networks:
       - can
   barman:
@@ -15,8 +17,10 @@ services:
     image: eschen42/standby-barman:latest
     volumes:
       - ./var_lib_postgresql/standby:/var/lib/postgresql/data
+      - ./var_lib_postgresql/backup:/var/lib/postgresql/backup
       - ./var_lib_postgresql/archive:/var/lib/postgresql/archive
       - ./var_log/barman:/var/log
+      - ./build/support:/usr/local/support
     networks:
       - can
 networks:
