@@ -55,7 +55,8 @@ echo --- status of merged restored data
 git status
 echo ... status of merged restored data
 
-# Force resolution of conflicts to accept changes from pull;
+# Force resolution of merge-conflicts to accept changes from pull;
+# (Inspired by https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging#_manual_remerge.)
 #   Note that lines produced by 'git ls-files -u' have the floowing form
 #     ^100644 9455a96dccf05071bbd2075fdaae326722c67284 2\tpg_hba.conf$
 #     ^100644 98b34b02c06af56edfba9fd4279850848ce60e8b 3\tpg_hba.conf$
