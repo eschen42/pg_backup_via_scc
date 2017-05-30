@@ -9,7 +9,7 @@ chown $PG_UID:$PG_GID var_lib_postgresql/archive
  # start the suite of docker containers for the Galaxy instance
 echo running docker-compose up in daemon mode
 (
-  docker-compose -f docker-compose.yml up -d
+  docker-compose -p pggitpg -f docker-compose.yml up -d
 ) && (
   echo docker-compose up succeeded
 )

@@ -24,7 +24,7 @@ set -eu
 #   ref: https://wiki.postgresql.org/wiki/Hot_Standby#Create_the_master_database
 # Note well: The 'pg' container is started with -v ./var_lib_postgresql/pg:/var/lib/postgresql/data
 if [ ! -f ./var_lib_postgresql/pg/postgresql.conf ]; then
-  #  docker exec -ti -u postgres hotstandby_pg_1 bash -c '
+  #  docker exec -ti -u postgres pggitpg_pg_1 bash -c '
   #    MYIFADDR=$( python -c "import socket;print socket.gethostbyname('\''$HOSTNAME'\'')" )
   #    echo ---
   #    echo START initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
@@ -47,7 +47,7 @@ if [ ! -f ./var_lib_postgresql/pg/postgresql.conf ]; then
   #    echo END initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
   #    echo ...
   #  '
-  docker exec -ti -u postgres hotstandby_pg_1 bash -c '
+  docker exec -ti -u postgres pggitpg_pg_1 bash -c '
     MYIFADDR=$( python -c "import socket;print socket.gethostbyname('\''$HOSTNAME'\'')" )
     echo ---
     echo START initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
