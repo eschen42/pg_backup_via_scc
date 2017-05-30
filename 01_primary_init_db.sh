@@ -24,30 +24,40 @@ set -eu
 #   ref: https://wiki.postgresql.org/wiki/Hot_Standby#Create_the_master_database
 # Note well: The 'pg' container is started with -v ./var_lib_postgresql/pg:/var/lib/postgresql/data
 if [ ! -f ./var_lib_postgresql/pg/postgresql.conf ]; then
+  #  docker exec -ti -u postgres hotstandby_pg_1 bash -c '
+  #    MYIFADDR=$( python -c "import socket;print socket.gethostbyname('\''$HOSTNAME'\'')" )
+  #    echo ---
+  #    echo START initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
+  # 
+  #    set -e
+  #    cd /var/lib/postgresql/data;
+  #    initdb -D /var/lib/postgresql/data
+  # 
+  #    echo `pwd` @ $HOSTNAME
+  #    ls -la | grep -E "(conf$)|(pid$)"
+  # 
+  #    if [ ! -f postmaster.pid ]; then
+  #      # ensure permissions to start the DB
+  #      chmod 700 /var/lib/postgresql/data
+  #      echo starting the PostgreSQL database after "initialize the primary db if it does not exist"
+  #      supervisorctl start postgres
+  #      supervisorctl status postgres
+  #    fi
+  # 
+  #    echo END initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
+  #    echo ...
+  #  '
   docker exec -ti -u postgres hotstandby_pg_1 bash -c '
     MYIFADDR=$( python -c "import socket;print socket.gethostbyname('\''$HOSTNAME'\'')" )
     echo ---
     echo START initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
 
-    set -e
-    cd /var/lib/postgresql/data;
-    initdb -D /var/lib/postgresql/data
-
-    echo `pwd` @ $HOSTNAME
-    ls -la | grep -E "(conf$)|(pid$)"
-
-    if [ ! -f postmaster.pid ]; then
-      # ensure permissions to start the DB
-      chmod 700 /var/lib/postgresql/data
-      echo starting the PostgreSQL database after "initialize the primary db if it does not exist"
-      supervisorctl start postgres
-      supervisorctl status postgres
-    fi
+    /usr/local/support/primary/init_db.sh
 
     echo END initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
     echo ...
   '
 else
-  echo Cowardly not initiailzing database because file already exists - ./var_lib_postgresql/pg/postgresql.conf
+  echo Cowardly not initializing database because file already exists - ./var_lib_postgresql/pg/postgresql.conf
 fi
 
