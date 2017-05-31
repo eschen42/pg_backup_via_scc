@@ -13,7 +13,7 @@ COPY supervisor_cron.conf /etc/supervisor/conf.d
 # install CVS for shipping deltas from pg_dumpall
 RUN set -x \
 	&& apt-get update \
-	&& apt-get install --yes --no-install-recommends git man-db \
+	&& apt-get install --yes --no-install-recommends cvs git man-db \
 	&& apt-get upgrade --yes \
 	&& apt-get autoremove --yes \
 	&& rm -rf /var/lib/apt/lists/*

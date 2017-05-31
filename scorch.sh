@@ -1,7 +1,11 @@
 #!/bin/sh
 set -eu
-if [ -z "$(sudo find var_lib_postgresql -name *.pid -print)" ]; then
-  echo scorching var_lib_postgresql var_log
-  sudo rm -rf var_lib_postgresql var_log
+if [ -d var_lib_postgresql ]; then
+  echo scorching var_lib_postgresql
+  sudo rm -rf var_lib_postgresql
+fi
+if [ -d var_log ]; then
+  echo scorching var_log
+  sudo rm -rf var_log
 fi
 

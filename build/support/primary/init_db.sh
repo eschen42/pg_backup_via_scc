@@ -7,7 +7,7 @@
 
     set -e
     cd /var/lib/postgresql/data;
-    initdb -D /var/lib/postgresql/data
+    echo "initdb -D /var/lib/postgresql/data" | tee | bash
 
     echo `pwd` @ $HOSTNAME
     ls -la | grep -E "(conf$)|(pid$)"
