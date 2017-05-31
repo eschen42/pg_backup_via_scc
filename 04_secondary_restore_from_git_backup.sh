@@ -7,7 +7,7 @@ set -eu
 
 # recreate the database from scratch and seed from the backup git repo
 # Note well: The 'barman' container is started with -v ./var_lib_postgresql/standby:/var/lib/postgresql/data
-docker exec -ti -u postgres pggitpg_barman_1 bash -c '
+docker exec -ti -u postgres `cat PROJECT`_barman_1 bash -c '
   MYIFADDR=$( python -c "import socket;print socket.gethostbyname('\''$HOSTNAME'\'')" )
   echo ---
   echo START restoring DB from git repo for primary database on "barman" = $HOSTNAME = $MYIFADDR

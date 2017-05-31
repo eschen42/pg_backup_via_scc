@@ -1,6 +1,6 @@
 #!/bin/bash
 
-supervisorctl stop postgres
+supervisorctl stop postgres 2>&1 | grep -v 'postgres: ERROR (not running)'
 
 set -e
 
