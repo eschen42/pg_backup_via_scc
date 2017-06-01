@@ -47,7 +47,7 @@ git remote add backup ../backup/data
 
 # git pull will fail when merge is required; it will be required for the first pull
 set +e
-git pull backup master
+git pull --no-edit backup master
 set -e
 
 # show how things look after the pull

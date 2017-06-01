@@ -10,7 +10,7 @@ if [ ! -d /var/lib/postgresql/data/.git ]; then
   echo current directory /var/lib/postgresql/data
   set -e
   # this statement will fail and abort the script postgresql is not connectable
-  psql -c "select 1"
+  psql -c "select 1" | cat
   pg_dumpall > pg_dumpall.sql
   git init
   git add *.conf pg_dumpall.sql
