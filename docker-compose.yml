@@ -1,7 +1,6 @@
 version: '2'
 services:
   pg:
-    user: postgres
     image: eschen42/standby-barman:latest
     volumes:
       - ./var_lib_postgresql/standby:/var/lib/postgresql/standby
@@ -13,7 +12,6 @@ services:
     networks:
       - can
   barman:
-    user: postgres
     image: eschen42/standby-barman:latest
     volumes:
       - ./var_lib_postgresql/standby:/var/lib/postgresql/data
