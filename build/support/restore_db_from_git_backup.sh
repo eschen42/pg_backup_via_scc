@@ -82,6 +82,7 @@ echo --- status of added restored data
 git status
 echo ... status of added restored data
 
+set +e
 # do the merge and show the result
 git commit -m "merge restored files"
 echo --- status of committed restored data
@@ -90,9 +91,12 @@ echo ... status of committed restored data
 
 # restore the database using pg_dumpall.sql
 supervisorctl start postgres
+supervisorctl status postgres
 psql < pg_dumpall.sql
 
+if [ ! -f pg_restored.sql ]; then
+  echo ALERT pg_restored.sql is missing
+fi
 # validate the results of the restoration
 pg_dumpall > pg_restored.sql
-diff pg_restored.sql pg_dumpall.sql 
-
+diff pg_restored.sql pg_dumpall.sql
