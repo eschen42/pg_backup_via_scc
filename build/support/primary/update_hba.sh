@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # do nothing if the git repository does not exist
-if [ ! -d /var/lib/postgresql/data/pg_hba.conf ]; then
+if [ ! -f /var/lib/postgresql/data/pg_hba.conf ]; then
   echo "ERROR - configuration file does not exist at /var/lib/postgresql/data/pg_hba.conf"
 else
   echo ---
-  echo before update, tail of /var/lib/postgresql/backup/data/pg_hba.conf is
-  tail /var/lib/postgresql/backup/data/pg_hba.conf
-  echo ...
+  if [ -f /var/lib/postgresql/backup/data/pg_hba.conf ]; then
+    echo before update, tail of /var/lib/postgresql/backup/data/pg_hba.conf is
+    tail /var/lib/postgresql/backup/data/pg_hba.conf
+    echo ...
+  fi
   set -e
   pushd /var/lib/postgresql/data
   # this statement will fail and abort the script postgresql is not running

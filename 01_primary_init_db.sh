@@ -54,6 +54,9 @@ if [ ! -f ./var_lib_postgresql/pg/postgresql.conf ]; then
 
     /usr/local/support/primary/init_db.sh
 
+    echo updating host-based-authentication file pg_hba.conf on "pg" = $HOSTNAME = $MYIFADDR
+    /usr/local/support/primary/update_hba.sh
+
     echo END initializing primary database on "pg" = $HOSTNAME = $MYIFADDR
     echo ...
   '
